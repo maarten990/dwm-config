@@ -139,6 +139,7 @@ typedef struct {
 
 typedef struct {
 	const char *symbol;
+	Bool addgaps;
 	void (*arrange)(Monitor *);
 } Layout;
 
@@ -322,6 +323,7 @@ static Display *dpy;
 static DC dc;
 static Monitor *mons = NULL, *selmon = NULL;
 static Window root;
+static int gap;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -525,7 +527,7 @@ checkotherwm(void) {
 void
 cleanup(void) {
 	Arg a = {.ui = ~0};
-	Layout foo = { "", NULL };
+	Layout foo = { "", False, NULL };
 	Monitor *m;
 
 	view(&a);
@@ -1500,10 +1502,12 @@ void
 resizeclient(Client *c, int x, int y, int w, int h) {
 	XWindowChanges wc;
 
-	c->oldx = c->x; c->x = wc.x = x;
-	c->oldy = c->y; c->y = wc.y = y;
-	c->oldw = c->w; c->w = wc.width = w;
-	c->oldh = c->h; c->h = wc.height = h;
+	gap = c->isfloating ? 0 : c->mon->lt[c->mon->sellt]->addgaps ? gappx : 0;
+
+	c->oldx = c->x; c->x = wc.x = x + gap;
+	c->oldy = c->y; c->y = wc.y = y + gap;
+	c->oldw = c->w; c->w = wc.width = w - (gap ? (x + w + (c->bw * 2) == c->mon->mx + c->mon->mw ? 2 : 1) * gap : 0);
+	c->oldh = c->h; c->h = wc.height = h - (gap ? (y + h + (c->bw * 2) == c->mon->my + c->mon->mh ? 2 : 1) * gap : 0);
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
@@ -1887,6 +1891,7 @@ void
 tile(Monitor *m) {
 	unsigned int i, n, h, mw, my, ty;
 	Client *c;
+	
 
 	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
 	if(n == 0)
@@ -1900,12 +1905,12 @@ tile(Monitor *m) {
 		if(i < m->nmaster) {
 			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
 			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), False);
-			my += HEIGHT(c);
+			my += HEIGHT(c) + gap;
 		}
 		else {
 			h = (m->wh - ty) / (n - i);
 			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), False);
-			ty += HEIGHT(c);
+			ty += HEIGHT(c) + gap;
 		}
 }
 

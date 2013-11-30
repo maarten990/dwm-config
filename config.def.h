@@ -1,20 +1,20 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "Meslo LG S-10";
+static const char font[]            = "Monaco-9";
 static const char normbordercolor[] = "#444444";
-static const char normbgcolor[]     = "#222222";
+static const char normbgcolor[]     = "#181818";
 static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#ff950e";
-static const char selbgcolor[]      = "#222222";
-static const char selfgcolor[]      = "#ff950e";
-static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static const char selbordercolor[]  = "#BAF617";
+static const char selbgcolor[]      = "#181818";
+static const char selfgcolor[]      = "#BAF617";
+static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const Bool showsystray       = True;     /* False means no systray */
 static const Bool showbar           = True;     /* False means no bar */
 static const Bool topbar            = True;     /* False means bottom bar */
-static const unsigned int gappx     = 8;
+static unsigned int gappx           = 0;
 
 /* tagging */
 #define MAX_TAGLEN 16
